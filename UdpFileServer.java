@@ -9,5 +9,14 @@ public class UdpFileServer
     private final int port;// Server port
     private final int bufferSize; // Buffer size for data transfer
     private final String fileDirectory;// Directory where files are stored
-    
-   
+    public UdpFileServer(int port, int bufferSize, String fileDirectory) throws IOException
+    {
+        this.port = port;
+        this.bufferSize = bufferSize;
+        this.fileDirectory = fileDirectory;
+        this.socket = new DatagramSocket(null);
+        socket.setReuseAddress(true);// Allow address reuse
+        socket.bind(new InetSocketAddress(port));// Bind to port
+        System.out.println("File server started on port: " + port);
+        System.out.println("File directory: " + new File(fileDirectory).getAbsolutePath());
+    }
