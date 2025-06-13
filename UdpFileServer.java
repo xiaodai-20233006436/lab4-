@@ -20,3 +20,17 @@ public class UdpFileServer
         System.out.println("File server started on port: " + port);
         System.out.println("File directory: " + new File(fileDirectory).getAbsolutePath());
     }
+     public void start()
+    {
+        try
+        {
+            while (true)// Main loop
+            {
+                byte[] buffer = new byte[bufferSize];
+                DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length);
+                socket.receive(requestPacket);// Wait for request
+                String fileName = new String(requestPacket.getData(), 0, requestPacket.getLength(), StandardCharsets.UTF_8).trim();
+                InetAddress clientAddress = requestPacket.getAddress();
+                int clientPort = requestPacket.getPort();
+                System.out.printf("[%s:%d] Requested file: %s\n", clientAddress, clientPort, fileName);
+              
