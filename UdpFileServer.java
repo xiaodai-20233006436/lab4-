@@ -38,4 +38,9 @@ public class UdpFileServer
                     sendErrorResponse("Invalid file name format", clientAddress, clientPort);
                     continue;
                 }
+                Path filePath = Paths.get(fileDirectory, fileName);
+                if (!Files.exists(filePath)) {  
+                    sendErrorResponse("File does not exist", clientAddress, clientPort);
+                    continue;
+                }
               
