@@ -24,11 +24,11 @@ public class UdpFileServer
     {
         try
         {
-            while (true)// Main loop
+            while (true)
             {
                 byte[] buffer = new byte[bufferSize];
                 DatagramPacket requestPacket = new DatagramPacket(buffer, buffer.length);
-                socket.receive(requestPacket);// Wait for request
+                socket.receive(requestPacket);
                 String fileName = new String(requestPacket.getData(), 0, requestPacket.getLength(), StandardCharsets.UTF_8).trim();
                 InetAddress clientAddress = requestPacket.getAddress();
                 int clientPort = requestPacket.getPort();
@@ -39,7 +39,8 @@ public class UdpFileServer
                     continue;
                 }
                 Path filePath = Paths.get(fileDirectory, fileName);
-                if (!Files.exists(filePath)) {  
+                if (!Files.exists(filePath))
+                {
                     sendErrorResponse("File does not exist", clientAddress, clientPort);
                     continue;
                 }
@@ -48,28 +49,49 @@ public class UdpFileServer
                     sendErrorResponse("File is not readable", clientAddress, clientPort);
                     continue;
                 }
-               try
+                try
                 {
-                    byte[] fileData = Files.readAllBytes(filePath);//Read the contents of the file
+                    byte[] fileData = Files.readAllBytes(filePath);
                     int totalSize = fileData.length;
                     int chunkSize = bufferSize - 10; // Reserve space for metadata
                     int totalChunks = (int) Math.ceil((double) totalSize / chunkSize);
+
                     // Send file info
                     String fileInfo = totalSize + ":" + totalChunks;
                     sendResponse(fileInfo.getBytes(StandardCharsets.UTF_8), clientAddress, clientPort);
+
                     // Send file in chunks
                     int offset = 0;
                     for (int chunkNum = 0; offset < totalSize; chunkNum++)
                     {
                         int currentChunkSize = Math.min(chunkSize, totalSize - offset);
                         byte[] chunkData = new byte[currentChunkSize + 4];
-                        System.arraycopy(intToBytes(chunkNum), 0, chunkData, 0, 4); // Add chunk number
-                        System.arraycopy(fileData, offset, chunkData, 4, currentChunkSize);// Add chunk data
+                        System.arraycopy(intToBytes(chunkNum), 0, chunkData, 0, 4);
+                        System.arraycopy(fileData, offset, chunkData, 4, currentChunkSize);
+
                         sendResponse(chunkData, clientAddress, clientPort);
                         offset += currentChunkSize;
+
                         System.out.printf("Sending progress: %d/%d (%.1f%%)\r",
                                 chunkNum + 1, totalChunks, (offset * 100.0 / totalSize));
                     }
                     System.out.println("\nFile " + fileName + " sent successfully");
                 } catch (IOException e)
+                {
+                    sendErrorResponse("File read error: " + e.getMessage(), clientAddress, clientPort);
+                }
+            }
+        }
+        catch (IOException e)
+        {
+            System.err.println("Server error: " + e.getMessage());
+        } finally
+        {
+            if (socket != null && !socket.isClosed())
+            {
+                socket.close();
+            }
+        }
+    }
+          
               
