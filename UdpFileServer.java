@@ -43,4 +43,9 @@ public class UdpFileServer
                     sendErrorResponse("File does not exist", clientAddress, clientPort);
                     continue;
                 }
+                if (!Files.isReadable(filePath))
+                {
+                    sendErrorResponse("File is not readable", clientAddress, clientPort);
+                    continue;
+                }
               
