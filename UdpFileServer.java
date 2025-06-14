@@ -113,5 +113,21 @@ public class UdpFileServer
             System.err.println("Failed to send error response: " + e.getMessage());
         }
     }
+    public static void main(String[] args)
+    {
+        int port = 9091;//The input port number is specified
+        String fileDir = args.length > 0 ? args[0] : "./";//Obtain the file storage directory parameter
+        try
+        {
+            UdpFileServer server = new UdpFileServer(port, 4096, fileDir);
+            server.start();
+        } 
+        catch (IOException e)//Exception handling
+        {
+            System.err.println("Failed to start server: " + e.getMessage());
+            System.exit(1);
+        }
+    }
+}
           
               
