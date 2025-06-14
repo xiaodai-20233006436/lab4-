@@ -101,6 +101,10 @@ public class UdpFileClient
             System.out.println("\nFile saved: " + new File(fileName).getAbsolutePath());//Handle number parsing errors
             
         }
+        catch (NumberFormatException e)
+        {
+            System.err.println("Invalid server response: " + response);
+        }
         
     }
         
