@@ -43,4 +43,16 @@ public class UdpFileClient
                 downloadFile(fileName);
             }
         }
+        catch (IOException e)
+        {
+            System.err.println("Client error: " + e.getMessage());
+        }
+        finally
+        {
+            if (socket != null && !socket.isClosed())
+            {
+                socket.close();//Close the socket
+            }
+        }
+    }
 }
