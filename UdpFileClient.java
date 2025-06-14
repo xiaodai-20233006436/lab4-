@@ -83,6 +83,22 @@ public class UdpFileClient
             int totalChunks = Integer.parseInt(parts[1]);
             System.out.printf("Downloading: %s (Size: %d bytes, Chunks: %d)\n",
                     fileName, fileSize, totalChunks);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(fileSize);//Receive file chunks
+            for (int chunkNum = 0; chunkNum < totalChunks; chunkNum++)
+            {
+                socket.receive(responsePacket);
+                byte[] chunkData = Arrays.copyOf(
+                        responsePacket.getData(), responsePacket.getLength()
+                );
+                baos.write(chunkData);
+                System.out.printf("Progress: %d/%d (%.1f%%)\r", //Print the download progress
+                        chunkNum + 1, totalChunks, (chunkNum + 1) * 100.0 / totalChunks);
+            }
+            try (FileOutputStream fos = new FileOutputStream(fileName)) //Write the received data to a file
+            {
+                fos.write(baos.toByteArray());
+            }
+            System.out.println("\nFile saved: " + new File(fileName).getAbsolutePath());//Handle number parsing errors
             
         }
         
