@@ -48,4 +48,28 @@ public class UdpFileServer
                     sendErrorResponse("File is not readable", clientAddress, clientPort);
                     continue;
                 }
+               try
+                {
+                    byte[] fileData = Files.readAllBytes(filePath);//Read the contents of the file
+                    int totalSize = fileData.length;
+                    int chunkSize = bufferSize - 10; // Reserve space for metadata
+                    int totalChunks = (int) Math.ceil((double) totalSize / chunkSize);
+                    // Send file info
+                    String fileInfo = totalSize + ":" + totalChunks;
+                    sendResponse(fileInfo.getBytes(StandardCharsets.UTF_8), clientAddress, clientPort);
+                    // Send file in chunks
+                    int offset = 0;
+                    for (int chunkNum = 0; offset < totalSize; chunkNum++)
+                    {
+                        int currentChunkSize = Math.min(chunkSize, totalSize - offset);
+                        byte[] chunkData = new byte[currentChunkSize + 4];
+                        System.arraycopy(intToBytes(chunkNum), 0, chunkData, 0, 4); // Add chunk number
+                        System.arraycopy(fileData, offset, chunkData, 4, currentChunkSize);// Add chunk data
+                        sendResponse(chunkData, clientAddress, clientPort);
+                        offset += currentChunkSize;
+                        System.out.printf("Sending progress: %d/%d (%.1f%%)\r",
+                                chunkNum + 1, totalChunks, (offset * 100.0 / totalSize));
+                    }
+                    System.out.println("\nFile " + fileName + " sent successfully");
+                } catch (IOException e)
               
