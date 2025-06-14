@@ -15,4 +15,32 @@ public class UdpFileClient
         this.serverIp = serverIp;
         this.serverPort = serverPort;
     }
+    public void start()//Client main loop
+    {
+        try (Scanner scanner = new Scanner(System.in))//Use Scanner to read user input
+        {
+            System.out.println("File download client started!");
+            System.out.println("Available commands: download <filename>, exit");
+            while (true)//Main loop
+            {
+                System.out.print("> ");
+                String input = scanner.nextLine().trim();// Read user input
+                if (input.equalsIgnoreCase("exit"))
+                {
+                    break;
+                }
+                if (!input.startsWith("download "))
+                {
+                    System.out.println("Invalid command, use: download <filename> or exit");
+                    continue;
+                }
+                String fileName = input.substring(9).trim();
+                if (!isValidFileName(fileName))//Verify the validity of the file name
+                {
+                    System.out.println("Error: Filename can only contain letters, numbers, underscores and hyphens");
+                    continue;
+                }
+                downloadFile(fileName);
+            }
+        }
 }
