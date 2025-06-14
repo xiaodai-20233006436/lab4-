@@ -33,4 +33,9 @@ public class UdpFileServer
                 InetAddress clientAddress = requestPacket.getAddress();
                 int clientPort = requestPacket.getPort();
                 System.out.printf("[%s:%d] Requested file: %s\n", clientAddress, clientPort, fileName);
+                if (!isValidFileName(fileName))
+                {
+                    sendErrorResponse("Invalid file name format", clientAddress, clientPort);
+                    continue;
+                }
               
