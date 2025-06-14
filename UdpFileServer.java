@@ -93,5 +93,25 @@ public class UdpFileServer
             }
         }
     }
+    private boolean isValidFileName(String fileName) //The correct specification of the file name
+    {
+        return fileName.matches("^[a-zA-Z0-9_\\-]+(\\.[a-zA-Z0-9]+)?$");
+    }
+    private void sendResponse(byte[] data, InetAddress address, int port) throws IOException// // Send response to client
+    {
+        DatagramPacket packet = new DatagramPacket(data, data.length, address, port);
+        socket.send(packet);
+    }
+    private void sendErrorResponse(String message, InetAddress address, int port)//// Send error response to client
+    {
+        try
+        {
+            String errorMsg = "ERROR:" + message;
+            sendResponse(errorMsg.getBytes(StandardCharsets.UTF_8), address, port);
+            System.err.println("Sending error response: " + errorMsg);
+        } catch (IOException e) {
+            System.err.println("Failed to send error response: " + e.getMessage());
+        }
+    }
           
               
