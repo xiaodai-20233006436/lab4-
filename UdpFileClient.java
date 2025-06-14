@@ -79,6 +79,10 @@ public class UdpFileClient
         }
         try
         {
+            int fileSize = Integer.parseInt(parts[0]);
+            int totalChunks = Integer.parseInt(parts[1]);
+            System.out.printf("Downloading: %s (Size: %d bytes, Chunks: %d)\n",
+                    fileName, fileSize, totalChunks);
             
         }
         
