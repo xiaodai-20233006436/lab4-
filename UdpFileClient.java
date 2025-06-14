@@ -77,6 +77,10 @@ public class UdpFileClient
             System.err.println("Invalid server response format");
             return;
         }
+        try
+        {
+            
+        }
         
     }
         
